@@ -1,4 +1,3 @@
-
 # Local AI Coding Assistant Manual
 
 **(Free, Offline, Open-Source Research Setup)**
@@ -39,7 +38,6 @@ Start the service:
 
 ```bash
 sudo systemctl start ollama
-sudo systemctl enable ollama
 ```
 
 ---
@@ -322,4 +320,3 @@ rm ~/.config/fish/functions/ollama-fish.fish
 ✅ No file upload needed
 ✅ Full project analysis
 ✅ Easy uninstall anytime
-
