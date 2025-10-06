@@ -40,6 +40,27 @@ Start the service:
 sudo systemctl start ollama
 ```
 
+### Troubleshooting: Black Screen on Suspend/Resume (NVIDIA Hybrid Graphics Laptops)
+If you encounter a black screen after waking from sleep (common on Ubuntu with Intel + NVIDIA setups like GeForce 940MX), Ollama's CUDA GPU usage can interfere with power management.
+
+**Quick Test (Non-Destructive):**
+```bash
+sudo systemctl stop ollama
+```
+Test suspend (close lid or `systemctl suspend`). If it works, proceed to fix.
+
+**Permanent Fix:**
+Mask NVIDIA's faulty suspend services (kernel handles GPU power instead):
+```bash
+sudo systemctl mask nvidia-suspend.service nvidia-hibernate.service nvidia-resume.service
+sudo reboot
+```
+- Restart Ollama: `sudo systemctl start ollama`.
+- Test suspend again—should resolve without losing GPU acceleration.
+- Undo if needed: `sudo systemctl unmask nvidia-suspend.service nvidia-hibernate.service nvidia-resume.service && sudo reboot`.
+
+This affects only NVIDIA users; Intel-only setups are unaffected.
+
 ---
 
 ## 🔹 3. Install the Best Free Model (per 2025 benchmarks)
@@ -279,6 +300,12 @@ Or highlight code → `Ctrl + L` → “Refactor with Continue”.
 sudo systemctl stop ollama
 sudo systemctl disable ollama
 sudo rm -rf /usr/local/bin/ollama ~/.ollama
+```
+
+**Unmask NVIDIA Services (If You Applied the Fix)**
+```bash
+sudo systemctl unmask nvidia-suspend.service nvidia-hibernate.service nvidia-resume.service
+sudo reboot
 ```
 
 **Remove Continue**
