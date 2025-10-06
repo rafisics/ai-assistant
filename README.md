@@ -86,7 +86,7 @@ Create file:
 
 ```bash
 mkdir -p ~/.config/fish/functions
-nano ~/.config/fish/functions/ollama-fish.fish
+nvim ~/.config/fish/functions/ollama-fish.fish
 ```
 
 Paste this:
@@ -185,26 +185,40 @@ You’ll now see a **💬 Continue** icon in the sidebar.
 Open config:
 
 ```
-Ctrl + Shift + P → “Continue: Open Settings (JSON)”
+Ctrl + Shift + P → “Continue: Open Settings” → Agents → Configure Local Agent
 ```
-
+Or directly open: `~.continue/config.yaml`
 Paste this:
 
-```json
-{
-  "models": {
-    "default": {
-      "provider": "ollama",
-      "model": "qwen2.5-coder:7b",
-      "apiBase": "http://localhost:11434"
-    }
-  },
-  "allowAnonymousTelemetry": false,
-  "embeddingsProvider": {
-    "provider": "ollama",
-    "model": "qwen2.5-coder:7b"
-  }
-}
+```yaml
+name: Local Agent
+version: 1.0.0
+schema: v1
+models:
+  - name: Qwen 2.5 Coder 7B
+    provider: ollama
+    model: qwen2.5-coder:7b
+    apiBase: http://localhost:11434
+    roles:
+      - chat
+      - edit
+      - apply
+      - autocomplete
+    capabilities:
+      - tool_use  # For agent-like research workflows if expanded later
+    defaultCompletionOptions:
+      temperature: 0.2  # Precise code gen/refactors
+      maxTokens: 2048
+      stop: ["\n\n", "###"]
+    autocompleteOptions:
+      debounceDelay: 300
+      maxPromptTokens: 1024
+      onlyMyCode: true  # Repo-focused
+  - name: Nomic Embed
+    provider: ollama
+    model: nomic-embed-text:latest
+    roles:
+      - embed
 ```
 
 Save → reload window:
@@ -217,31 +231,27 @@ Ctrl + Shift + P → “Developer: Reload Window”
 
 ## 🔹 7. (Optional) Add Research Slash Commands
 
-Add these to your same `config.json`:
+Add these to the end of your same `config.yaml`:
 
-```json
-"slashCommands": [
-  {
-    "name": "/research-refactor",
-    "description": "Refactor research project structure",
-    "prompt": "@Files Suggest a modular layout separating Python analysis, Bash preprocessing, C++ compute, and LaTeX reporting. Output refactored folder structure and rationale."
-  },
-  {
-    "name": "/bug-hunt",
-    "description": "Find and fix bugs in multi-lang code",
-    "prompt": "@code Analyze the bug across Python/Bash/C++. Provide minimal fixes and test suggestions."
-  },
-  {
-    "name": "/pipeline-optimize",
-    "description": "Optimize data pipeline",
-    "prompt": "@Files Review scripts for efficiency. Suggest parallelization, vectorization, or better I/O handling."
-  },
-  {
-    "name": "/doc-gen",
-    "description": "Generate LaTeX/MD docs from code",
-    "prompt": "@Files Extract methods and results, format them into a LaTeX/Markdown report."
-  }
-]
+```yaml
+prompts:
+  - name: research-refactor
+    description: Refactor research project structure
+    prompt: |
+      @Files Suggest a modular layout separating Python analysis, Bash preprocessing, C++ compute, and LaTeX reporting. Output refactored folder structure and rationale.
+  - name: bug-hunt
+    description: Find and fix bugs in multi-lang code
+    prompt: |
+      @code Analyze the bug across Python/Bash/C++. Provide minimal fixes and test suggestions.
+  - name: pipeline-optimize
+    description: Optimize data pipeline
+    prompt: |
+      @Files Review scripts for efficiency. Suggest parallelization, vectorization, or better I/O handling.
+  - name: doc-gen
+    description: Generate LaTeX/MD docs from code
+    prompt: |
+      @Files Extract methods and results, format them into a LaTeX/Markdown report.
+
 ```
 
 Now in Continue chat, type `/research-refactor` or `/pipeline-optimize`.
